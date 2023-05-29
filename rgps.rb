@@ -2,20 +2,19 @@ require 'gtk3'
 
 def on_treeview_cursor_changed
 #  p "on_treeview_cursor_changed"
-  if not @treeview.selection.selected.nil?
+  return if @treeview.selection.selected.nil?
 #    p "selected"
-    iter = @treeview.selection.selected
+  iter = @treeview.selection.selected
 #    p "---cur---", iter[0], iter[1], iter[2]
-    @textbuf.text = ""
-    begin
-      File.open(iter[2], "r") do |desc_file|
-        desc_file.each_line do |line|
-          @textbuf.text = @textbuf.text + line
-        end
+  @textbuf.text = ''
+  begin
+    File.open(iter[2], 'r') do |desc_file|
+      desc_file.each_line do |line|
+        @textbuf.text = @textbuf.text + line
       end
-    rescue
-      @textbuf.text = "cannot open #{iter[2]}"
     end
+  rescue
+    @textbuf.text = "cannot open #{iter[2]}"
   end
 end
 
@@ -28,14 +27,14 @@ def on_searchentry_activate
   @treeview.selection.unselect_all
   @treeview.selection.mode = :none
   if @searchentry.buffer.text.match(/\w+/).nil?
-    @searchentry.buffer.text = ""
+    @searchentry.buffer.text = ''
     @list.clear
     fill_list
   else
     update_list(@searchentry.buffer.text)
   end
     @treeview.selection.mode = :single
-  @textbuf.text = ""
+  @textbuf.text = ''
 end
 
 def add_columns(name, index)
@@ -49,10 +48,10 @@ end
 
 def update_list(keyword)
   @list.clear
-  File.open(@indexfile, "r") do |file|
+  File.open(@indexfile, 'r') do |file|
     file.each_line do |line|
-      if /(?<name>[^\|]+)\|(?<origin>[^\|]+)\|(?<prefix>[^\|]+)\|(?<desc>[^\|]*)\|(?<descpath>[^\|]+)\|(?<maintainer>[^\|]+)\|(?<categories>[^\|]+)/ =~ line
-        if name.match?(/#{keyword}/i) or desc.match?(/#{keyword}/i)
+      if /(?<name>[^|]+)\|(?<origin>[^|]+)\|(?<prefix>[^|]+)\|(?<desc>[^|]*)\|(?<descpath>[^|]+)\|(?<maintainer>[^|]+)\|(?<categories>[^|]+)/ =~ line
+        if name.match?(/#{keyword}/i) || desc.match?(/#{keyword}/i)
           iter = @list.append
           iter[0] = name
           iter[1] = desc
@@ -64,9 +63,9 @@ def update_list(keyword)
 end
 
 def fill_list
-  File.open(@indexfile, "r") do |file|
+  File.open(@indexfile, 'r') do |file|
     file.each_line do |line|
-      if /(?<name>[^\|]+)\|(?<origin>[^\|]+)\|(?<prefix>[^\|]+)\|(?<desc>[^\|]*)\|(?<descpath>[^\|]+)\|(?<maintainer>[^\|]+)\|(?<categories>[^\|]+)/ =~ line
+      if /(?<name>[^|]+)\|(?<origin>[^|]+)\|(?<prefix>[^|]+)\|(?<desc>[^|]*)\|(?<descpath>[^|]+)\|(?<maintainer>[^|]+)\|(?<categories>[^|]+)/ =~ line
         iter = @list.append
         #      iter[0] = origin.gsub('/usr/ports/','')
         iter[0] = name
@@ -76,7 +75,6 @@ def fill_list
     end
   end
 end
-
 
 builder = Gtk::Builder.new(file: 'rgps.glade')
 
@@ -88,11 +86,9 @@ win = builder.get_object('win')
 
 ver = `uname -r`
 if /(?<major>\d+)\.(?<minor>\d+)/ =~ ver
-  if major.nil?
-    exit(-1)
-  end
+  exit(-1) if major.nil?
 end
-@indexfile = "/usr/ports/INDEX-"+major
+@indexfile = '/usr/ports/INDEX-' + major
 fill_list
 
 add_columns('名称', 0)

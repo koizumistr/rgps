@@ -2,7 +2,7 @@ require 'optparse'
 
 long_desc = false
 opt = OptionParser.new
-opt.banner = "Usage: rbps.rb [option] PATTERN"
+opt.banner = 'Usage: rbps.rb [option] PATTERN'
 opt.on('-l', 'display long description') { long_desc = true }
 opt.version = [1, 0]
 
@@ -13,26 +13,24 @@ rescue
   exit(-2)
 end
 
-if ARGV.size() == 0
+if ARGV.empty?
   puts opt.help
   exit(-3)
 end
 
 ver = `uname -r`
 if /(?<major>\d+)\.(?<minor>\d+)/ =~ ver
-  if major.nil?
-    exit(-1)
-  end
+  exit(-1) if major.nil?
 end
 
-File.open("/usr/ports/INDEX-"+major, "r") do |file|
+File.open('/usr/ports/INDEX-' + major, 'r') do |file|
   file.each_line do |line|
-    if /(?<name>[^\|]+)\|(?<origin>[^\|]+)\|(?<prefix>[^\|]+)\|(?<desc>[^\|]*)\|(?<descpath>[^\|]+)\|(?<maintainer>[^\|]+)\|(?<categories>[^\|]+)/ =~ line
-      if origin.match?(/#{ARGV[0]}/i) or desc.match?(/#{ARGV[0]}/i)
-        print origin.gsub('/usr/ports/',''),"\t",desc,"\n"
+    if /(?<name>[^|]+)\|(?<origin>[^|]+)\|(?<prefix>[^|]+)\|(?<desc>[^|]*)\|(?<descpath>[^|]+)\|(?<maintainer>[^|]+)\|(?<categories>[^|]+)/ =~ line
+      if origin.match?(/#{ARGV[0]}/i) || desc.match?(/#{ARGV[0]}/i)
+        print origin.gsub('/usr/ports/', ''), "\t", desc, "\n"
         if long_desc
           begin
-            File.open(descpath, "r") do |desc_file|
+            File.open(descpath, 'r') do |desc_file|
               desc_file.each_line do |line|
                 print "\t", line
               end
