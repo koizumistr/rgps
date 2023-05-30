@@ -33,7 +33,7 @@ def on_searchentry_activate
   else
     update_list(@searchentry.buffer.text)
   end
-    @treeview.selection.mode = :single
+  @treeview.selection.mode = :single
   @textbuf.text = ''
 end
 
